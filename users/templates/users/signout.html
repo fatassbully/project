@@ -1,0 +1,10 @@
+{% extends 'mySite\base.html' %}
+{% block title %}
+    Sign In
+{% endblock title %}
+{% block content %}
+    <div class="ml-5">
+        <h2 class="ml-3">You have successfully logged out.</h2>
+        <a href="{% url 'signin_url' %}" class="btn btn-outline-success mr-sm-2 ml-3" type="submit">Sign In again</a>
+    </div>
+{% endblock content %}

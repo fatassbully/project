@@ -1,0 +1,19 @@
+{% extends 'mySite\base.html' %}
+{% block title %}
+    Sign In
+{% endblock title %}
+{% block content %}
+    <div class="ml-5">
+        <h2 class="ml-3">Sign In</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="col-md-3 mb-2">
+                    <label>{{ field.label }}</label>
+                    <div>{{ field }}</div>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-outline-success ml-3">Sign In</button>
+        </form>
+    </div>
+{% endblock content %}

@@ -1,0 +1,54 @@
+{% extends 'mySite\base.html' %}
+{% block title %}
+    Registration
+{% endblock title %}
+{% block content %}
+    <div class="ml-5">
+        <h2 class="ml-3">Registration</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="col-md-3 mb-2">
+                    <label>{{ field.label }}</label>
+                    <div>{{ field }}</div>
+                </div>
+            {% endfor %}
+            <div id="invalid-feedback" class="mb-3 ml-3"></div>
+            <button type="submit" id='btn' class="btn btn-outline-success ml-3">Register</button>
+        </form>
+    </div>
+{% endblock content %}
+
+{% block ajaxscript %}
+    <script>
+        $(document).ready(function(){
+            $('#id_username').on('input', validate);
+            function validate(){
+                var username = $('#id_username').val();
+                $.ajax({
+                    method: "GET",
+                    url: '/validate_username/',
+                    data: {'username': username},
+                    dataType: 'json',
+                    success: function(data){
+                        console.log(data);
+                        if (data.is_taken) {
+                            $('#id_username').addClass('form-control is-invalid');
+                            $('#invalid-feedback').text(data.is_taken);
+                            $('#btn').attr('disabled', 'disabled');
+                        }
+                        else if (data.is_free) {
+                            $('#id_username').removeClass('is-invalid');
+                            $('#id_username').addClass('form-control is-valid');
+                            $('#invalid-feedback').text('');
+                            $('#btn').removeAttr('disabled');
+                        }
+                    },
+                    error: function(data){
+                        console.log(data);
+                    }
+                })
+            }
+        })
+    </script>
+{% endblock ajaxscript %}

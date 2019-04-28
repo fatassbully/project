@@ -1,0 +1,23 @@
+{% extends 'mySite\base.html' %}
+{% block content %}
+    <div class="container">
+        <div id="first">
+        <a href="{% url 'attachment_detail_url' numb=attachment.id %}">{{ attachment|truncatechars:50 }}</a>
+        <p id="creator">Uploaded by {{ attachment.owner }}  - {{ attachment.date|date:"j E Y H:i" }}</p>
+        </div>
+        <audio id="second">
+            <source volume="0" src="/media/{{ attachment.file }}" type="audio/mp3">
+            <source volume="0" src="/media/{{ attachment.file }}" type="audio/wav">
+            Тег audio не поддерживается вашим браузером!
+        </audio>
+    </div>
+    </p>
+        <ul>
+        {% for comment in comments %}
+            <li>
+                <p>{{ comment.text }}</p>
+                <p>Created by {{ comment.owner }}  - {{ comment.date|date:"j E Y H:i" }}</p>
+            </li>
+        {% endfor %}
+        </ul>
+{% endblock content %}

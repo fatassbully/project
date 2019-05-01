@@ -14,7 +14,7 @@ from mySite.models import Attachment, Comment
 class HomeView(View):
 
     def get(self, request):
-        attachments = Attachment.objects.all()[0:3]
+        attachments = Attachment.objects.all()[0:5]
         return render(request, 'mySite/home.html', context={'attachments': attachments})
 
 
@@ -26,3 +26,23 @@ class AttachmentDetail(View):
         # comments = Comment.objects.filter(attachment=attachment)
         return render(request, 'mySite/attachment.html', context={'attachment': attachment,
                                                                   'comments': comments})
+
+
+def next(request):
+    index = int(request.GET.get('index'))
+    data = Attachment.objects.all()[index:index + 5]
+    data2 = []
+    print(len(data))
+    if len(data) < 5:
+        flag = True
+    else:
+        flag = False
+    print(flag)
+    for i in data:
+        data2.append({'owner': str(i.owner),
+                      'name': i.__str__(),
+                      'date': i.date.strftime("%d %B %Y %I:%M"),
+                      'index': index + 5,
+                      'flag': flag})
+    context = {'elements': data2}
+    return JsonResponse(context)

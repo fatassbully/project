@@ -9,6 +9,67 @@
         {% endfor %}
     </div>
 
+    <a href="" id="">Previous</a>
+    <a href="next" id="next" >Next</a>
 {% endblock content %}
 
+{% block ajaxscript %}
+    <script>
+        $(document).ready(function(){
+            var index = 5;
 
+            function disabler() {
+                var num = $("#content").children().length;
+                if (num < 5) {
+                    $('#next').addClass('disabled');
+                }
+            }
+
+            disabler();
+
+            function ajax_pagination(e) {
+                e.preventDefault();
+                    $.ajax({
+                        method: "GET",
+                        url: $(this).attr('href'),
+                        data: {'index': index},                            //{'content': $('#content p:last')}
+                        dataType: 'json',
+                        success: function(data){
+                            console.log(data);
+                            console.log(data.elements.length);
+                            if (data.elements.length == 0){
+                                $('#next').addClass('disabled');
+                                return
+                            }
+                            $('#content p').remove();
+                            for(var i = 0; i < data.elements.length; i++){
+                                var numb = data.elements[i].id;
+                                var row = '<p><a href=\"attachment/' + numb + '\">' +
+                                            String(data.elements[i].name) +
+                                            '</a> ' +
+                                            'Created by' +
+                                            data.elements[i].owner +
+                                            '  - ' +
+                                            data.elements[i].date +
+                                            '</p>';
+
+                                $('#content').append(row);
+                            }
+                            index = data.elements[data.elements.length - 1].index;
+                            disabler();
+                        },
+                        error: function(data){
+                            console.log(data);
+                        }
+                    })
+            }
+
+            $('#next').click(ajax_pagination);
+        })
+    </script>
+{% endblock ajaxscript %}
+
+
+{#                            if (data.elements.length < 5){#}
+{#                                $('#next').addClass('disabled');#}
+{#                            }#}

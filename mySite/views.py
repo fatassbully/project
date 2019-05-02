@@ -9,11 +9,14 @@ from mySite.models import Attachment, Comment
 
 # def home(request):
 #     return render(request, 'mySite\home.html')
+index = 0
 
 
 class HomeView(View):
 
     def get(self, request):
+        global index
+        index = 0
         attachments = Attachment.objects.all()[0:5]
         return render(request, 'mySite/home.html', context={'attachments': attachments})
 
@@ -28,21 +31,30 @@ class AttachmentDetail(View):
                                                                   'comments': comments})
 
 
-def next(request):
-    index = int(request.GET.get('index'))
-    data = Attachment.objects.all()[index:index + 5]
-    data2 = []
-    print(len(data))
-    if len(data) < 5:
-        flag = True
+def pagination(request):
+    data = Attachment.objects.all()
+    global index
+
+    if request.GET.get('identifier') == 'next':
+        index = index + 5
+    elif request.GET.get('identifier') == 'previous':
+        index = index - 5
+
+    if index > 5:
+        prev = True
     else:
-        flag = False
-    print(flag)
-    for i in data:
+        prev = False
+    if len(data) > index:
+        nxt = True
+    else:
+        nxt = False
+    data2 = []
+    for i in data[index - 5: index]:
         data2.append({'owner': str(i.owner),
                       'name': i.__str__(),
                       'date': i.date.strftime("%d %B %Y %I:%M"),
-                      'index': index + 5,
-                      'flag': flag})
+                      'id': i.id,
+                      'nxt': nxt,
+                      'prev': prev})
     context = {'elements': data2}
     return JsonResponse(context)

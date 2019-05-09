@@ -20,16 +20,16 @@ div.container {
 }
 
 a.disabled {
-    pointer-events: none; /* делаем элемент неактивным для взаимодействия */
-    cursor: default; /*  курсор в виде стрелки */
-    color: #888;/* цвет текста серый */
+    pointer-events: none;
+    cursor: default;
+    color: #888;
 }
 
 #audiojs_wrapper0 {
     margin-top: 15px;
 }
 
-form div div input {
+.form-style div div input {
     display: block;
     width: 100%;
     height: calc(1.5em + .75rem + 2px);
@@ -50,4 +50,11 @@ form div div input {
     margin-top: .25rem;
     font-size: 80%;
     color: #dc3545;
+}
+
+#success-feedback {
+    width: 100%;
+    margin-top: .25rem;
+    font-size: 80%;
+    color: #28a745;
 }

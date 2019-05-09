@@ -5,7 +5,7 @@
 {% block content %}
     <div class="ml-5">
         <h2 class="ml-3">Registration</h2>
-        <form method="post">
+        <form class="form-style" method="post">
             {% csrf_token %}
             {% for field in form %}
                 <div class="col-md-3 mb-2">
@@ -13,6 +13,11 @@
                     <div>{{ field }}</div>
                 </div>
             {% endfor %}
+
+            {% if form.errors %}
+                    <div id="invalid-feedback" class="mb-3 ml-3">{{ form.error_messages.password_mismatch }}</div>
+            {% endif %}
+            <div id="success-feedback" class="mb-3 ml-3"></div>
             <div id="invalid-feedback" class="mb-3 ml-3"></div>
             <button type="submit" id='btn' class="btn btn-outline-success ml-3">Register</button>
         </form>
@@ -32,15 +37,22 @@
                     dataType: 'json',
                     success: function(data){
                         console.log(data);
-                        if (data.is_taken) {
+                        if ($('#id_username').val() == "") {
+                            $('#id_username').addClass('form-control is-invalid');
+                            $('#invalid-feedback').text(data.is_empty);
+                            $('#success-feedback').text('');
+                            $('#btn').attr('disabled', 'disabled');
+                        }else if (data.is_taken) {
                             $('#id_username').addClass('form-control is-invalid');
                             $('#invalid-feedback').text(data.is_taken);
+                            $('#success-feedback').text('');
                             $('#btn').attr('disabled', 'disabled');
                         }
                         else if (data.is_free) {
                             $('#id_username').removeClass('is-invalid');
                             $('#id_username').addClass('form-control is-valid');
                             $('#invalid-feedback').text('');
+                            $('#success-feedback').text(data.is_free);
                             $('#btn').removeAttr('disabled');
                         }
                     },

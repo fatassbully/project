@@ -54,8 +54,8 @@
                     <a href="{% url 'registration_url' %}" class="btn btn-outline-warning mr-sm-2" type="submit">Register</a>
                     <a href="{% url 'signin_url' %}" class="btn btn-outline-success mr-sm-2" type="submit">Sign In</a>
                 {% endif %}
-                <form class="form-inline my-2 my-lg-0">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <form class="form-inline my-2 my-lg-0" action="{% url 'home_page_url' %}">
+                    <input name="search" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
                 </form>
             </div>
@@ -78,6 +78,8 @@
     {% block content %}
         <h1>There is nothing!</h1>
     {% endblock content %}
+    {% block form %}
+    {% endblock form %}
 
     <script
           src={% static "js/audiojs/audio.min.js" %}></script>

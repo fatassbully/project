@@ -16,8 +16,34 @@
         {% for comment in comments %}
             <li>
                 <p>{{ comment.text }}</p>
-                <p>Created by {{ comment.owner }}  - {{ comment.date|date:"j E Y H:i" }}</p>
+                <p id="creator">Created by {{ comment.owner }}  - {{ comment.date|date:"j E Y H:i" }}</p>
             </li>
         {% endfor %}
         </ul>
 {% endblock content %}
+
+{% block form %}
+    <form class="mt-4" method="post">
+        {% csrf_token %}
+        <div>
+            <h4>Write your comment</h4>
+            {% for field in form_for_comment %}
+                <label>{{ field.label }}</label>
+                <div>{{ field }}</div>
+            {% endfor %}
+            <button name="SendComment" type="submit" class="btn btn-outline-success ml-3 mt-3">Send</button>
+        </div>
+    </form>
+
+    <form class="mt-4" method="post">
+        {% csrf_token %}
+        <div>
+            <h4>Shuffle it!</h4>
+            {% for field in form_for_shuffler %}
+                <label>{{ field.label }}</label>
+                <div>{{ field }}</div>
+            {% endfor %}
+            <button name="Shuffled" type="submit" class="btn btn-outline-success ml-3 mt-3">Shuffled</button>
+        </div>
+    </form>
+{% endblock form %}

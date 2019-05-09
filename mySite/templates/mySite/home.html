@@ -11,7 +11,29 @@
 
     <a href="previous" id="previous">Previous</a>
     <a href="next" id="next" >Next</a>
+
 {% endblock content %}
+
+{% block form %}
+    {% if user.is_authenticated %}
+        <form class="mt-4" enctype="multipart/form-data" method="post">
+            {% csrf_token %}
+            <div>
+                <h4>Upload your file</h4>
+                {% for field in form_for_attachment %}
+                        <label>{{ field.label }}</label>
+                        <div>{{ field }}</div>
+                {% endfor %}
+            </div>
+
+            {% for error in form_for_attachment.errors.file %}
+                <div id="invalid-feedback" class="mb-3 ml-3">{{ error }}</div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-outline-success ml-3 mt-3">Upload</button>
+        </form>
+    {% endif %}
+{% endblock form %}
 
 {% block ajaxscript %}
     <script>
@@ -32,13 +54,12 @@
                         success: function(data){
                             console.log(data);
                             console.log(data.elements.length);
-                            $('#content p').remove();
+                            $('#content div').remove();
                             for(var i = 0; i < data.elements.length; i++){
                                 var numb = data.elements[i].id;
-                                var row = '<p><a href=\"attachment/' + numb + '\">' +
+                                var row = '<div id="first"><a href=\"attachment/' + numb + '\">' +
                                             String(data.elements[i].name) +
-                                            '</a> ' +
-                                            'Created by' +
+                                            '</a><p id="creator">Uploaded by ' +
                                             data.elements[i].owner +
                                             '  - ' +
                                             data.elements[i].date +

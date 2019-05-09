@@ -39,8 +39,10 @@ def validate_username(request):
         username = request.GET.get('username')
         is_taken = User.objects.filter(username=username).exists()
         if is_taken:
-            data = {'is_taken': 'A user with that username already exists.'}
+            data = {'is_taken': 'A user with that username already exists.',
+                    'is_empty': '"Username" field can\'t be empty.'}
             return JsonResponse(data)
         else:
-            data = {'is_free': 'This name is free'}
+            data = {'is_free': 'This name is free.',
+                    'is_empty': '"Username" field can\'t be empty.'}
             return JsonResponse(data)

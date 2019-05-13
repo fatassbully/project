@@ -4,12 +4,12 @@ import os
 # v2.1
 
 
-def slice_n_dice(linktoaudio="", typeofaudio="", shuffle=True, number_of_slices=30, percentage=0, times=1):
+def slice_n_dice(linktoaudio="", shuffle=True, number_of_slices=30, percentage=0, times=1):
     # Changing directory to the directory of audio file
-    print('Enter in func QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ')
-
-
     chislo = 0
+
+    typeofaudio = pydub.utils.mediainfo(linktoaudio)['codec_name']
+
     for symbol in linktoaudio[::-1]:
 
         if symbol == "\\":

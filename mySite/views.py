@@ -3,14 +3,11 @@ from django.http import JsonResponse, Http404
 from django.views.generic import TemplateView
 from django.shortcuts import render, get_object_or_404
 from mySite import forms
-from mySite.models import Attachment, Comment
+from mySite.models import Attachment
 from audioShuffler import audio_shuffler
 from os import path
 
-
-
 # Create your views here.
-
 
 index = None
 
@@ -26,7 +23,9 @@ class HomeView(TemplateView):
         search = request.GET.get('search', '')
 
         if search:
-            data = Attachment.objects.filter(Q(file__icontains=search) | Q(name__icontains=search))
+            data = Attachment.objects.filter(Q(name__exact='') &
+                                             Q(file__iregex="Attachment/.*" + search + ".*") |
+                                             Q(name__icontains=search)).order_by('-date')
         else:
             data = Attachment.objects.all().order_by('-date')
 
@@ -64,13 +63,14 @@ class AttachmentDetail(TemplateView):
 
     def post(self, request, *args, **kwargs):
         attachment = get_object_or_404(Attachment, id=kwargs['numb'])
+        comments = attachment.comment.all()
 
         if 'SendComment' in request.POST:
             form = forms.CommentForm(request.POST)
-            comments = attachment.comment.all()
             context = {'attachment': attachment,
                        'comments': comments,
-                       'form_for_comment': form}
+                       'form_for_comment': self.form_for_comment,
+                       'form_for_shuffler': self.form_for_shuffler}
 
             form.instance.owner = self.request.user
             form.instance.attachment = attachment
@@ -83,20 +83,20 @@ class AttachmentDetail(TemplateView):
         elif 'Shuffled' in request.POST:
             form = forms.ShufflerForm(request.POST)
 
-            # file_path = path.abspath(str(attachment.file))
-            file_path = path.abspath(path.join((path.dirname(path.dirname(path.abspath(str(attachment.file))))), 'media', str(attachment.file)))
-            file_type = path.splitext(path.basename(str(attachment.file)))[-1]
+            file_path = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'media', str(attachment.file))
             shuffle_flag = form['shuffle_flag'].value()
             number_of_slices = int(form['number_of_slices'].value())
             percentage = int(form['percentage'].value())
             times = int(form['times'].value())
 
-            print('W2WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
-            print(file_path)
+            shuffled_file = audio_shuffler.slice_n_dice(file_path, shuffle_flag, number_of_slices, percentage, times)
 
-            shuffled_file = audio_shuffler.slice_n_dice(file_path, file_type,
-                                                        shuffle_flag, number_of_slices,
-                                                        percentage, times)
+            context = {'attachment': attachment,
+                       'comments': comments,
+                       'form_for_comment': self.form_for_comment,
+                       'form_for_shuffler': form,
+                       'shuffled_file': shuffled_file}
+            return render(request, 'mySite/attachment.html', context)
         else:
             raise Http404
 

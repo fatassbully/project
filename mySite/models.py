@@ -23,7 +23,8 @@ class Attachment(models.Model):
 
     def __str__(self):
         if self.name == '':
-            return path.splitext(path.basename(str(self.file)))[0]
+            self.name = path.basename(str(self.file))
+            return self.name
         return self.name
 
 

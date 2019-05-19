@@ -11,6 +11,18 @@
             Тег audio не поддерживается вашим браузером!
         </audio>
     </div>
+    <div>
+        {% if shuffled_file %}
+            <div id="first">
+                <p>Result!</p>
+            </div>
+            <audio id="second">
+                <source volume="0" src="/media/Result.mp3" type="audio/mp3">
+                <source volume="0" src="/media/Result.wav" type="audio/wav">
+                Тег audio не поддерживается вашим браузером!
+            </audio>
+        {% endif %}
+    </div>
     </p>
         <ul>
         {% for comment in comments %}
@@ -23,17 +35,19 @@
 {% endblock content %}
 
 {% block form %}
-    <form class="mt-4" method="post">
-        {% csrf_token %}
-        <div>
-            <h4>Write your comment</h4>
-            {% for field in form_for_comment %}
-                <label>{{ field.label }}</label>
-                <div>{{ field }}</div>
-            {% endfor %}
-            <button name="SendComment" type="submit" class="btn btn-outline-success ml-3 mt-3">Send</button>
-        </div>
-    </form>
+    {% if user.is_authenticated %}
+        <form class="mt-4" method="post">
+            {% csrf_token %}
+            <div>
+                <h4>Write your comment</h4>
+                {% for field in form_for_comment %}
+                    <label>{{ field.label }}</label>
+                    <div>{{ field }}</div>
+                {% endfor %}
+                <button name="SendComment" type="submit" class="btn btn-outline-success ml-3 mt-3">Send</button>
+            </div>
+        </form>
+    {% endif %}
 
     <form class="mt-4" method="post">
         {% csrf_token %}

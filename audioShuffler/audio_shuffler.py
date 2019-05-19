@@ -1,6 +1,7 @@
+import os
 import random
 import pydub
-import os
+from pydub import utils
 # v2.1
 
 
@@ -8,7 +9,10 @@ def slice_n_dice(linktoaudio="", shuffle=True, number_of_slices=30, percentage=0
     # Changing directory to the directory of audio file
     chislo = 0
 
-    typeofaudio = pydub.utils.mediainfo(linktoaudio)['codec_name']
+    try:
+        typeofaudio = pydub.utils.mediainfo(linktoaudio)['codec_name']
+    except Exception:
+        raise Exception('I can not get the file')
 
     for symbol in linktoaudio[::-1]:
 
@@ -18,7 +22,6 @@ def slice_n_dice(linktoaudio="", shuffle=True, number_of_slices=30, percentage=0
             chislo += 1
     end = len(linktoaudio) - chislo
     fordirectory = linktoaudio[:end]
-    print(fordirectory)
     os.chdir(fordirectory)
 
     # Check for Number of Repeats
@@ -30,9 +33,9 @@ def slice_n_dice(linktoaudio="", shuffle=True, number_of_slices=30, percentage=0
     list_of_snippets = []
 
     # Opening file to slice
-    if typeofaudio == ".wav":
+    if typeofaudio == "wav":
         file = pydub.AudioSegment.from_wav(linktoaudio)
-    elif typeofaudio == ".mp3":
+    elif typeofaudio == "mp3":
         file = pydub.AudioSegment.from_mp3(linktoaudio)
     else:
         print("Fignia kakaia to")
@@ -77,10 +80,10 @@ def slice_n_dice(linktoaudio="", shuffle=True, number_of_slices=30, percentage=0
                 final_file += i
 
     if typeofaudio == "wav":
-        return final_file.export('Result.wav', format='wav'), \
-           os.remove('Temp.wav'), \
-           print('All good')
+        final_file.export('Result.mp3', format='wav')
+        os.remove('Temp.wav')
+        return True
     else:
-        return final_file.export('Result.mp3', format='mp3'), \
-               os.remove('Temp.wav'), \
-               print('All good')
+        final_file.export('Result.mp3', format='mp3')
+        os.remove('Temp.wav')
+        return True

@@ -6,15 +6,17 @@ from mySite import forms
 from mySite.models import Attachment
 from audioShuffler import audio_shuffler
 from os import path
+from project import settings
 
 # Create your views here.
 
-index = None
+
+index = 0
+data = None
 
 
 class HomeView(TemplateView):
     form_for_attachment = forms.AttachmentForm
-    data = None
 
     def get(self, request, *args, **kwargs):
         global index
@@ -34,18 +36,19 @@ class HomeView(TemplateView):
 
     def post(self, request):
         global index
+        global data
         index = 0
         form = forms.AttachmentForm(request.POST, request.FILES)
 
-        context = {'form_for_attachment': form}
+        context = {'form_for_attachment': self.form_for_attachment}
 
         form.instance.owner = self.request.user
 
         if form.is_valid():
             form.save()
-            return render(request, 'mySite/home.html', context)
-        else:
-            return render(request, 'mySite/home.html', context)
+
+        data = Attachment.objects.all().order_by('-date')
+        return render(request, 'mySite/home.html', context)
 
 
 class AttachmentDetail(TemplateView):
@@ -77,19 +80,20 @@ class AttachmentDetail(TemplateView):
 
             if form.is_valid():
                 form.save()
-                return render(request, 'mySite/attachment.html', context)
-            else:
-                return render(request, 'mySite/attachment.html', context)
+
+            return render(request, 'mySite/attachment.html', context)
         elif 'Shuffled' in request.POST:
             form = forms.ShufflerForm(request.POST)
 
-            file_path = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'media', str(attachment.file))
+            file_path = path.join(settings.BASE_DIR, 'media',
+                                  str(attachment.file))
             shuffle_flag = form['shuffle_flag'].value()
             number_of_slices = int(form['number_of_slices'].value())
             percentage = int(form['percentage'].value())
             times = int(form['times'].value())
 
-            shuffled_file = audio_shuffler.slice_n_dice(file_path, shuffle_flag, number_of_slices, percentage, times)
+            shuffled_file = audio_shuffler.slice_n_dice(file_path, shuffle_flag, number_of_slices,
+                                                        percentage, times)
 
             context = {'attachment': attachment,
                        'comments': comments,
@@ -103,6 +107,7 @@ class AttachmentDetail(TemplateView):
 
 def pagination(request):
     global index
+    data2 = []
 
     if request.GET.get('identifier') == 'next':
         index = index + 5
@@ -117,7 +122,7 @@ def pagination(request):
         nxt = True
     else:
         nxt = False
-    data2 = []
+
     for i in data[index - 5: index]:
         data2.append({'owner': str(i.owner),
                       'name': i.__str__(),

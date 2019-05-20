@@ -1,7 +1,5 @@
 from os import path
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.core.validators import FileExtensionValidator
 
@@ -22,7 +20,7 @@ class Attachment(models.Model):
     name = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
-        if self.name == '':
+        if not self.name:
             self.name = path.basename(str(self.file))
             return self.name
         return self.name

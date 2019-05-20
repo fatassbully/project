@@ -5,4 +5,3 @@ from mySite.models import *
 
 admin.site.register(Comment)
 admin.site.register(Attachment)
-
